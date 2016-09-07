@@ -85,6 +85,8 @@ static void desmume_cycle()
 
 extern "C" {
 	int scePowerSetArmClockFrequency(int freq);
+	int scePowerSetBusClockFrequency(int freq);
+	int scePowerSetGpuClockFrequency(int freq);
 }
 
 #define FPS_CALC_INTERVAL 1000000
@@ -107,8 +109,6 @@ static inline void calc_fps(char fps_str[32])
 		frames = 0;
 		sceKernelGetProcessTime(&old);
 	}
-
-	frames++;
 }
 
 
@@ -117,6 +117,9 @@ int main()
 	char fps_str[32] = {0};
 
 	scePowerSetArmClockFrequency(444);
+	scePowerSetBusClockFrequency(222);
+	scePowerSetGpuClockFrequency(222);
+
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG);
 	sceTouchSetSamplingState(SCE_TOUCH_PORT_FRONT, 1);
 
@@ -124,8 +127,17 @@ int main()
 
 	char *filename = menu_FileBrowser();
 
-	if(!filename)
-		goto exit;
+	if(!filename) {
+		video_BeginDrawing();
+		vita2d_pgf_draw_text(video_font,0,20,RGBA8(0,255,0,255),1.0f,"ROM list is empty. Please upload *.nds to ux0:/data/desmume.");
+		vita2d_pgf_draw_text(video_font,0,40,RGBA8(0,255,0,255),1.0f,"Program will exit after 6s...");
+		video_EndDrawing();
+
+		sceKernelDelayThread(6000000);
+		video_Exit();
+		sceKernelExitProcess(0);
+		return 0;
+	}
 
 	struct NDS_fw_config_data fw_config;
 	NDS_FillDefaultFirmwareConfigData(&fw_config);
@@ -154,15 +166,18 @@ int main()
 		for (i = 0; i < UserConfiguration.frameSkip; i++) {
 			NDS_SkipNextFrame();
 			desmume_cycle();
-			frames++;
+			if (UserConfiguration.fpsCounterEnabled)
+				frames++;
 		}
 
 		desmume_cycle();
-		calc_fps(fps_str);
-
 		video_BeginDrawing();
 		video_DrawFrame();
-		vita2d_pgf_draw_text(video_font, 10, 30, RGBA8(255, 255, 255, 255),1.0f, fps_str);
+		if (UserConfiguration.fpsCounterEnabled) {
+			frames++;
+			calc_fps(fps_str);
+			vita2d_pgf_draw_text(video_font, 10, 30, RGBA8(255, 255, 255, 255),1.0f, fps_str);
+		}
 		video_EndDrawing();
 
 	}

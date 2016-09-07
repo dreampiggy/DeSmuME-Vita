@@ -52,6 +52,10 @@ char* menu_FileBrowser() {
 			UserConfiguration.soundEnabled = !UserConfiguration.soundEnabled;
 		}
 
+		if(pad.buttons & SCE_CTRL_TRIANGLE && !buttonPressed){
+			UserConfiguration.fpsCounterEnabled = !UserConfiguration.fpsCounterEnabled;
+		}
+
 		if(pad.buttons & SCE_CTRL_LTRIGGER && !buttonPressed){
 			UserConfiguration.threadedRendering = !UserConfiguration.threadedRendering;
 		}
@@ -85,14 +89,16 @@ char* menu_FileBrowser() {
 		video_BeginDrawing();
 		count = 0;
 		for( std::vector<SceIoDirent>::iterator it = entries.begin(); it != entries.end(); it++){
-			vita2d_pgf_draw_text(video_font,0,15 + count*15,cursor == count ? RGBA8(0,255,0,255) : RGBA8(255,255,255,255),1.0f,it->d_name);
+			vita2d_pgf_draw_text(video_font,0,20 + count*20,cursor == count ? RGBA8(0,255,0,255) : RGBA8(255,255,255,255),1.0f,it->d_name);
 			count++;
 		}
-		vita2d_pgf_draw_textf(video_font,500,20, RGBA8(0,0,255,255) ,1.0f,"Press ([ ]) to %s JIT", UserConfiguration.jitEnabled ? "disable" : "enable");
-		vita2d_pgf_draw_textf(video_font,500,40, RGBA8(0,0,255,255) ,1.0f,"Press (O) to %s Sound", UserConfiguration.soundEnabled ? "disable" : "enable");
-		vita2d_pgf_draw_textf(video_font,500,60, RGBA8(0,0,255,255) ,1.0f,"Press Left or Right DPAD to change frameSkip");
-		vita2d_pgf_draw_textf(video_font,500,80, RGBA8(0,0,255,255) ,1.0f,"Current frameSkip value: %u", UserConfiguration.frameSkip);
-		vita2d_pgf_draw_textf(video_font,500,100, RGBA8(0,0,255,255) ,1.0f,"Press L to %s threaded Rendering", UserConfiguration.threadedRendering ? "disable" : "enable");
+		vita2d_pgf_draw_text(video_font,500,20, RGBA8(0,0,255,255) ,1.0f,"Press (X) to run game");
+		vita2d_pgf_draw_textf(video_font,500,40, RGBA8(0,0,255,255) ,1.0f,"Press ([]) to %s JIT", UserConfiguration.jitEnabled ? "disable" : "enable");
+		vita2d_pgf_draw_textf(video_font,500,60, RGBA8(0,0,255,255) ,1.0f,"Press (O) to %s Sound", UserConfiguration.soundEnabled ? "disable" : "enable");
+		vita2d_pgf_draw_textf(video_font,500,80, RGBA8(0,0,255,255) ,1.0f,"Press (^) to %s FPS counter", UserConfiguration.fpsCounterEnabled ? "disable" : "enable");
+		vita2d_pgf_draw_text(video_font,500,100, RGBA8(0,0,255,255) ,1.0f,"Press <- or -> to change frameSkip");
+		vita2d_pgf_draw_textf(video_font,500,120, RGBA8(0,0,255,255) ,1.0f,"Current frameSkip value: %u", UserConfiguration.frameSkip);
+		vita2d_pgf_draw_textf(video_font,500,140, RGBA8(0,0,255,255) ,1.0f,"Press L to %s threaded Rendering", UserConfiguration.threadedRendering ? "disable" : "enable");
 		video_EndDrawing();
 	}
 

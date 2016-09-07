@@ -9,7 +9,7 @@
 
 vita2d_pgf *video_font;
 vita2d_texture *fb = NULL;
-int video_layout = 0;
+int video_layout = 2;
 void *data;
 
 void video_Init(){

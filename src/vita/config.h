@@ -5,6 +5,7 @@ struct TUserConfiguration {
 	TUserConfiguration();
 	bool soundEnabled;
 	bool jitEnabled;
+	bool fpsCounterEnabled;
 	bool threadedRendering;
 	unsigned int frameSkip;
 };
